@@ -1,0 +1,95 @@
+{
+  "ignition": {
+    "config": {
+      "replace": {
+        "source": null,
+        "verification": {}
+      }
+    },
+    "security": {
+      "tls": {}
+    },
+    "timeouts": {},
+    "version": "3.0.0"
+  },
+  "passwd": {
+    "groups": [
+      {
+        "gid": 1001,
+        "name": "public",
+        "system": true
+      }
+    ],
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJNbK/qiD/LIsM7RtD/m3l1kBrov/cRbKa+Aix5oE1EYzNMMadSB5475hQzL7EF0dyHZymgxuTNs/7bs7T2YgsuAxzEDFP5PFg17y2jUfMaXT/34ERcu+IngS+kekamBUnpIPLV0mVg2sFnTbSTToh6OjnSb+J4uieybwSeVO1uAgUlxowwKyuSlJc2DayArIrevGKZlP1gl28YafzVHVD0tyHt1SM9N8cWM4ebL9juiVv1Pk8fi/1zZSzXylLnwJAHuNpsMmDT9zytKnpIegdB6zU6ncQWfTjIe4evF6KhCsA1J7qWDiiuOX/7EtWnHkP30kbFyP/S+xgc7YK8ifl gollum"
+        ]
+      },
+      {
+        "groups": [
+          "public"
+        ],
+        "homeDir": "/home/public",
+        "name": "public",
+        "noCreateHome": true,
+        "primaryGroup": "public",
+        "shell": "/sbin/nologin",
+        "system": true,
+        "uid": 973
+      }
+    ]
+  },
+  "storage": {
+    "disks": [
+      {
+        "device": "/dev/disk/by-id/ata-OCZ-VERTEX3_OCZ-2F9JFXBEF607J0XF",
+        "partitions": [
+          {
+            "label": "boot",
+            "number": 1,
+            "sizeMiB": 1024,
+            "startMiB": 0
+          },
+          {
+            "label": "root",
+            "number": 2
+          }
+        ],
+        "wipeTable": true
+      }
+    ],
+    "filesystems": [
+      {
+        "device": "/dev/disk/by-partlabel/boot",
+        "format": "ext4",
+        "path": "/boot"
+      },
+      {
+        "device": "/dev/disk/by-partlabel/root",
+        "format": "xfs",
+        "path": "/"
+      },
+      {
+        "device": "/dev/md/data",
+        "format": "xfs",
+        "path": "/data",
+        "wipeFilesystem": false
+      }
+    ],
+    "raid": [
+      {
+        "devices": [
+          "/dev/disk/by-id/ata-WDC_WD20EARS-00MVWB0_WD-WCAZA1951975",
+          "/dev/disk/by-id/ata-WDC_WD20EARS-00MVWB0_WD-WCAZA2403964",
+          "/dev/disk/by-id/ata-WDC_WD20EARS-00MVWB0_WD-WMAZA2660615",
+          "/dev/disk/by-id/ata-WDC_WD20EFRX-68EUZN0_WD-WCC4M2725897"
+        ],
+        "level": "raid5",
+        "name": "data"
+      }
+    ]
+  },
+  "systemd": {}
+}

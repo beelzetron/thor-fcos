@@ -60,6 +60,18 @@
         "wipeTable": true
       }
     ],
+    "files": [
+      {
+        "group": {},
+        "path": "/etc/modprobe.d/ipmi.conf",
+        "user": {},
+        "contents": {
+          "source": "data:,options%20ipmi_si%20type%3Dkcs%20ports%3D0xca2",
+          "verification": {}
+        },
+        "mode": 420
+      }
+    ],
     "filesystems": [
       {
         "device": "/dev/disk/by-partlabel/boot",

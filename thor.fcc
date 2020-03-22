@@ -47,3 +47,8 @@ storage:
       device: /dev/md/data
       format: xfs
       wipe_filesystem: false
+  files:
+    - path: /etc/modprobe.d/ipmi.conf
+      contents:
+        inline: options ipmi_si type=kcs ports=0xca2
+      mode: 0644

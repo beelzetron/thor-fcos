@@ -10,10 +10,10 @@ passwd:
       ssh_authorized_keys:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJNbK/qiD/LIsM7RtD/m3l1kBrov/cRbKa+Aix5oE1EYzNMMadSB5475hQzL7EF0dyHZymgxuTNs/7bs7T2YgsuAxzEDFP5PFg17y2jUfMaXT/34ERcu+IngS+kekamBUnpIPLV0mVg2sFnTbSTToh6OjnSb+J4uieybwSeVO1uAgUlxowwKyuSlJc2DayArIrevGKZlP1gl28YafzVHVD0tyHt1SM9N8cWM4ebL9juiVv1Pk8fi/1zZSzXylLnwJAHuNpsMmDT9zytKnpIegdB6zU6ncQWfTjIe4evF6KhCsA1J7qWDiiuOX/7EtWnHkP30kbFyP/S+xgc7YK8ifl gollum
     - name: public
-      home: /home/public
+      home_dir: /home/public
       no_create_home: true
       primary_group: public
-      groups: public
+      groups: [public]
       uid: 973
       system: true
       shell: /sbin/nologin

@@ -107,7 +107,7 @@
   "systemd": {
     "units": [
       {
-        "contents": "[Unit]\nBefore=local-fs.target\n[Mount]\nWhere=/data\nWhat=/dev/disk/by-partlabel/data\n[Install]\nWantedBy=local-fs.target\n",
+        "contents": "[Unit]\nBefore=local-fs.target\n[Mount]\nWhere=/data\nWhat=/dev/md/data\n[Install]\nWantedBy=local-fs.target\n",
         "enabled": true,
         "name": "data.mount"
       }

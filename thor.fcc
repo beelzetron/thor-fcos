@@ -62,7 +62,7 @@ systemd:
         Before=local-fs.target
         [Mount]
         Where=/data
-        What=/dev/disk/by-partlabel/data
+        What=/dev/md/data
         [Install]
         WantedBy=local-fs.target
 

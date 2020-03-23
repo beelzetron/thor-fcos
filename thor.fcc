@@ -42,13 +42,27 @@ storage:
       format: ext4
     - path: /
       device: /dev/disk/by-partlabel/root
-      format: xfs
+      format: ext4
     - path: /data
       device: /dev/md/data
-      format: xfs
+      format: ext4
+      label: data
       wipe_filesystem: false
   files:
     - path: /etc/modprobe.d/ipmi.conf
       contents:
         inline: options ipmi_si type=kcs ports=0xca2
       mode: 0644
+systemd:
+  units:
+    - name: data.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Before=local-fs.target
+        [Mount]
+        Where=/data
+        What=/dev/disk/by-partlabel/data
+        [Install]
+        WantedBy=local-fs.target
+

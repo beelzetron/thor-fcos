@@ -80,12 +80,13 @@
       },
       {
         "device": "/dev/disk/by-partlabel/root",
-        "format": "xfs",
+        "format": "ext4",
         "path": "/"
       },
       {
         "device": "/dev/md/data",
-        "format": "xfs",
+        "format": "ext4",
+        "label": "data",
         "path": "/data",
         "wipeFilesystem": false
       }
@@ -103,5 +104,13 @@
       }
     ]
   },
-  "systemd": {}
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nBefore=local-fs.target\n[Mount]\nWhere=/data\nWhat=/dev/disk/by-partlabel/data\n[Install]\nWantedBy=local-fs.target\n",
+        "enabled": true,
+        "name": "data.mount"
+      }
+    ]
+  }
 }

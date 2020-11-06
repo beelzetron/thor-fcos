@@ -7,27 +7,18 @@ passwd:
       system: true
   users:
     - name: core
+      groups: [public]
       ssh_authorized_keys:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJNbK/qiD/LIsM7RtD/m3l1kBrov/cRbKa+Aix5oE1EYzNMMadSB5475hQzL7EF0dyHZymgxuTNs/7bs7T2YgsuAxzEDFP5PFg17y2jUfMaXT/34ERcu+IngS+kekamBUnpIPLV0mVg2sFnTbSTToh6OjnSb+J4uieybwSeVO1uAgUlxowwKyuSlJc2DayArIrevGKZlP1gl28YafzVHVD0tyHt1SM9N8cWM4ebL9juiVv1Pk8fi/1zZSzXylLnwJAHuNpsMmDT9zytKnpIegdB6zU6ncQWfTjIe4evF6KhCsA1J7qWDiiuOX/7EtWnHkP30kbFyP/S+xgc7YK8ifl gollum
     - name: public
       home_dir: /home/public
       no_create_home: true
       primary_group: public
-      groups: [public]
+      groups: [public,docker]
       uid: 973
       system: true
       shell: /sbin/nologin
 storage:
-  disks:
-    - device: /dev/disk/by-id/ata-OCZ-VERTEX3_OCZ-2F9JFXBEF607J0XF
-      wipe_table: true
-      partitions:
-        - label: boot
-          number: 1
-          size_mib: 1024
-          start_mib: 0
-        - label: root
-          number: 2
   raid:
     - name: data
       level: raid5
@@ -36,18 +27,8 @@ storage:
         - /dev/disk/by-id/ata-WDC_WD20EARS-00MVWB0_WD-WCAZA2403964
         - /dev/disk/by-id/ata-WDC_WD20EARS-00MVWB0_WD-WMAZA2660615
         - /dev/disk/by-id/ata-WDC_WD20EFRX-68EUZN0_WD-WCC4M2725897
-  filesystems:
-    - path: /boot
-      device: /dev/disk/by-partlabel/boot
-      format: ext4
-    - path: /
-      device: /dev/disk/by-partlabel/root
-      format: ext4
-    - path: /data
-      device: /dev/md/data
-      format: ext4
-      label: data
-      wipe_filesystem: false
+      options:
+        - --assume-clean
   files:
     - path: /etc/modprobe.d/ipmi.conf
       contents:
@@ -55,14 +36,86 @@ storage:
       mode: 0644
 systemd:
   units:
-    - name: data.mount
+    - name: var-data.mount
       enabled: true
       contents: |
         [Unit]
         Before=local-fs.target
         [Mount]
-        Where=/data
+        Where=/var/data
         What=/dev/md/data
         [Install]
         WantedBy=local-fs.target
+    - name: container-amule.service
+      enabled: true
+      contents: |
+        [Unit]
+        After=network-online.target
+        Wants=network-online.target
+        Description=Podman container-amule.service
+        Documentation=man:podman-generate-systemd(1)
 
+        [Service]
+        Restart=on-failure
+        ExecStartPre=/usr/bin/podman rm --ignore amule
+        ExecStartPre=/usr/bin/rm -f /%t/%n-pid /%t/%n-cid
+        ExecStart=/usr/bin/podman run \
+                  --conmon-pidfile /%t/%n-pid \
+                  --cidfile /%t/%n-cid \
+                  --cgroups=no-conmon \
+                  -d \
+                  --name amule \
+                  -p 4711:4711 \
+                  -p 4712:4712 \
+                  -p 4662:4662 \
+                  -p 4665:4665/udp \
+                  -p 4672:4672/udp \
+                  -v /var/data/aMule:/home/amule/.aMule:z \
+                  quay.io/beelzetron/amuled:f32
+        ExecStop=/usr/bin/podman stop --ignore --cidfile /%t/%n-cid -t 30
+        ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile /%t/%n-cid
+        PIDFile=/%t/%n-pid
+        KillMode=none
+        Type=forking
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: container-samba.service
+      enabled: true
+      contents: |
+        [Unit]
+        After=network-online.target
+        Wants=network-online.target
+        Description=Podman container-samba.service
+        Documentation=man:podman-generate-systemd(1)
+
+        [Service]
+        Restart=on-failure
+        ExecStartPre=/usr/bin/rm -f /%t/%n-pid /%t/%n-cid
+        ExecStartPre=/usr/bin/podman rm --ignore samba
+        ExecStart=/usr/bin/podman run \
+                  --conmon-pidfile /%t/%n-pid \
+                  --cidfile /%t/%n-cid \
+                  --cgroups=no-conmon \
+                  -d \
+                  --name samba \
+                  --net host \
+                  -v /var/data/shares:/shares:Z \
+                  dperson/samba \
+                  -n \
+                  -u 'public;public' \
+                  -w LABBASE \
+                  -s 'TimeCapsule;/shares/TimeCapsule;yes;no;yes' \
+                  -s 'Media;/shares/Media;yes;no;yes' \
+                  -s 'Incoming;/shares/Incoming;yes;no;yes' \
+                  -g 'fruit:aapl = yes' \
+                  -g 'fruit:time machine max size = 500G'
+        ExecStop=/usr/bin/podman stop --ignore --cidfile /%t/%n-cid -t 10
+        ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile /%t/%n-cid
+        PIDFile=/%t/%n-pid
+        KillMode=none
+        Type=forking
+
+        [Install]
+        WantedBy=multi-user.target

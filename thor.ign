@@ -42,24 +42,6 @@
     ]
   },
   "storage": {
-    "disks": [
-      {
-        "device": "/dev/disk/by-id/ata-OCZ-VERTEX3_OCZ-2F9JFXBEF607J0XF",
-        "partitions": [
-          {
-            "label": "boot",
-            "number": 1,
-            "sizeMiB": 1024,
-            "startMiB": 0
-          },
-          {
-            "label": "root",
-            "number": 2
-          }
-        ],
-        "wipeTable": true
-      }
-    ],
     "files": [
       {
         "group": {},
@@ -70,25 +52,6 @@
           "verification": {}
         },
         "mode": 420
-      }
-    ],
-    "filesystems": [
-      {
-        "device": "/dev/disk/by-partlabel/boot",
-        "format": "ext4",
-        "path": "/boot"
-      },
-      {
-        "device": "/dev/disk/by-partlabel/root",
-        "format": "ext4",
-        "path": "/"
-      },
-      {
-        "device": "/dev/md/data",
-        "format": "ext4",
-        "label": "data",
-        "path": "/data",
-        "wipeFilesystem": false
       }
     ],
     "raid": [
@@ -107,9 +70,9 @@
   "systemd": {
     "units": [
       {
-        "contents": "[Unit]\nBefore=local-fs.target\n[Mount]\nWhere=/data\nWhat=/dev/md/data\n[Install]\nWantedBy=local-fs.target\n",
+        "contents": "[Unit]\nBefore=local-fs.target\n[Mount]\nWhere=/var/data\nWhat=/dev/md/data\n[Install]\nWantedBy=local-fs.target\n",
         "enabled": true,
-        "name": "data.mount"
+        "name": "var-data.mount"
       }
     ]
   }
